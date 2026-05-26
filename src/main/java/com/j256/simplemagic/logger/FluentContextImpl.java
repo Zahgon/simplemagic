@@ -5,193 +5,125 @@ import java.util.Arrays;
 /**
  * Fluent-context implementation that records the message, throwable, and/or associated arguments and calls through to
  * {@link BaseLogger} to write out the message when the {@link #log()} method is called.
- * 
+ *
  * From SimpleLogging: https://github.com/j256/simplelogging
  *
  * @author graywatson
  */
 public class FluentContextImpl implements FluentContext {
 
-	private final static int DEFAULT_NUM_ARGS = 4;
-	final static String JUST_THROWABLE_MESSAGE = "throwable";
+    private final static int DEFAULT_NUM_ARGS = 4;
 
-	private final FluentLogger logger;
-	private final Level level;
-	private String msg;
-	/** message builder only used if {@link #appendMsg(String)} is called */
-	private StringBuilder msgBuilder;
-	private Throwable throwable;
-	private Object[] args;
-	private int argCount;
+    final static String JUST_THROWABLE_MESSAGE = "throwable";
 
-	public FluentContextImpl(FluentLogger logger, Level level) {
-		this.logger = logger;
-		this.level = level;
-	}
+    private final FluentLogger logger;
 
-	@Override
-	public FluentContext msg(String msg) {
-		if (this.msg != null || this.msgBuilder != null || msg == null) {
-			// only the first call is honored in case we want to set max arguments
-			return this;
-		}
-		this.msg = msg;
+    private final Level level;
 
-		// get the number of {} arguments to initialize our arguments array
-		int count = logger.countArgStrings(msg);
-		if (count > 0) {
-			if (args == null) {
-				args = new Object[count];
-			} else {
-				// NOTE: no point in shrinking it if count < args.length
-				maybeGrowArgs(count, count);
-			}
-		}
-		return this;
-	}
+    private String msg;
 
-	@Override
-	public FluentContext appendMsg(String msgSuffix) {
-		if (msgSuffix == null) {
-			// no-op
-		} else if (this.msgBuilder != null) {
-			this.msgBuilder.append(msgSuffix);
-		} else if (this.msg == null) {
-			// effectively the same as msg(String)
-			this.msg = msgSuffix;
-		} else {
-			this.msgBuilder = new StringBuilder(this.msg);
-			this.msg = null;
-			this.msgBuilder.append(msgSuffix);
-		}
-		return this;
-	}
+    /**
+     * message builder only used if {@link #appendMsg(String)} is called
+     */
+    private StringBuilder msgBuilder;
 
-	@Override
-	public FluentContext throwable(Throwable throwable) {
-		if (this.throwable == null) {
-			this.throwable = throwable;
-		}
-		return this;
-	}
+    private Throwable throwable;
 
-	@Override
-	public FluentContext arg(Object arg) {
-		addArg(arg);
-		return this;
-	}
+    private Object[] args;
 
-	@Override
-	public FluentContext arg(boolean arg) {
-		addArg(arg);
-		return this;
-	}
+    private int argCount;
 
-	@Override
-	public FluentContext arg(byte arg) {
-		addArg(arg);
-		return this;
-	}
+    public FluentContextImpl(FluentLogger logger, Level level) {
+        this.logger = logger;
+        this.level = level;
+    }
 
-	@Override
-	public FluentContext arg(char arg) {
-		addArg(arg);
-		return this;
-	}
+    @Override
+    public FluentContext msg(String msg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public FluentContext arg(short arg) {
-		addArg(arg);
-		return this;
-	}
+    @Override
+    public FluentContext appendMsg(String msgSuffix) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public FluentContext arg(int arg) {
-		addArg(arg);
-		return this;
-	}
+    @Override
+    public FluentContext throwable(Throwable throwable) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public FluentContext arg(long arg) {
-		addArg(arg);
-		return this;
-	}
+    @Override
+    public FluentContext arg(Object arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public FluentContext arg(float arg) {
-		addArg(arg);
-		return this;
-	}
+    @Override
+    public FluentContext arg(boolean arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public FluentContext arg(double arg) {
-		addArg(arg);
-		return this;
-	}
+    @Override
+    public FluentContext arg(byte arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public FluentContext args(Object[] addArgs) {
-		if (addArgs == null) {
-			return this;
-		}
-		if (this.args == null) {
-			// NOTE: this will reuse the args argument but only until the log() call or until another arg is added
-			args = addArgs;
-			argCount = addArgs.length;
-		} else {
-			// extend the array if necessary
-			int needed = argCount + addArgs.length;
-			maybeGrowArgs(needed, needed);
-			for (int i = 0; i < addArgs.length; i++) {
-				args[argCount++] = addArgs[i];
-			}
-		}
-		return this;
-	}
+    @Override
+    public FluentContext arg(char arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public void log() {
-		String msgToPrint;
-		if (msgBuilder == null) {
-			msgToPrint = msg;
-		} else {
-			msgToPrint = msgBuilder.toString();
-		}
-		if (msgToPrint == null) {
-			// if we have no message but we do have arguments then build a message like: '{}', '{}', ...
-			if (argCount > 0) {
-				logger.doLog(level, throwable, null, args, argCount);
-			} else if (throwable == null) {
-				// ignore log line if no message, args, or throwable
-			} else {
-				// just log a throwable with a minimal message
-				logger.doLog(level, throwable, JUST_THROWABLE_MESSAGE, null, 0);
-			}
-		} else if (argCount == 0) {
-			// no arguments
-			logger.doLog(level, throwable, msgToPrint, null, 0);
-		} else {
-			logger.doLog(level, throwable, msgToPrint, args, argCount);
-		}
-		// chances are we are done with the object after this
-	}
+    @Override
+    public FluentContext arg(short arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	private void addArg(Object arg) {
-		if (args == null) {
-			args = new Object[DEFAULT_NUM_ARGS];
-		} else {
-			// whenever we grow the array we double it
-			maybeGrowArgs(argCount + 1, args.length * 2);
-		}
-		args[argCount++] = arg;
-	}
+    @Override
+    public FluentContext arg(int arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	/**
-	 * Maybe grow our args array if the new-length is more than the args.length.
-	 */
-	private void maybeGrowArgs(int neededLength, int growToLength) {
-		if (neededLength > args.length) {
-			args = Arrays.copyOf(args, growToLength);
-		}
-	}
+    @Override
+    public FluentContext arg(long arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public FluentContext arg(float arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public FluentContext arg(double arg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public FluentContext args(Object[] addArgs) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void log() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    private void addArg(Object arg) {
+        if (args == null) {
+            args = new Object[DEFAULT_NUM_ARGS];
+        } else {
+            // whenever we grow the array we double it
+            maybeGrowArgs(argCount + 1, args.length * 2);
+        }
+        args[argCount++] = arg;
+    }
+
+    /**
+     * Maybe grow our args array if the new-length is more than the args.length.
+     */
+    private void maybeGrowArgs(int neededLength, int growToLength) {
+        if (neededLength > args.length) {
+            args = Arrays.copyOf(args, growToLength);
+        }
+    }
 }

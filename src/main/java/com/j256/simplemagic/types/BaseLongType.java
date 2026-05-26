@@ -4,23 +4,22 @@ import com.j256.simplemagic.endian.EndianType;
 
 /**
  * Base class for those types which use long types to compare.
- * 
+ *
  * @author graywatson
  */
 public abstract class BaseLongType extends NumberType {
 
-	public BaseLongType(EndianType endianType) {
-		super(endianType);
-	}
+    public BaseLongType(EndianType endianType) {
+        super(endianType);
+    }
 
-	@Override
-	public Number decodeValueString(String valueStr) throws NumberFormatException {
-		return Long.decode(valueStr);
-	}
+    @Override
+    public Number decodeValueString(String valueStr) throws NumberFormatException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-	@Override
-	public byte[] getStartingBytes(Object testValue) {
-		return endianConverter.convertToByteArray(((NumberComparison) testValue).getValue().longValue(),
-				getBytesPerType());
-	}
+    @Override
+    public byte[] getStartingBytes(Object testValue) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }
